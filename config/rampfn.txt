@@ -1,0 +1,21 @@
+{
+    'system': 'rampfn',
+    'input_dimension': 1,
+    'step': 1,
+    'network_width': 32,
+    'num_labels': 5,
+    'epochs': 500,
+    'patience': 50,
+    'batch_size': 100,
+    'learning_rate': 0.001,
+    'data_file': 'data/rampfn_data.csv',
+    'model_dir': 'output/rampfn/models/',
+    'attractor_list': '[[1.0],[-1.0]]',
+    'log_dir': 'output/rampfn/logs/',
+    'output_dir': 'output/rampfn/',
+    'label_threshold': 0.5,
+    'verbose': True,
+    'domain': '[[-1.1,1.1]]',
+    'seed': 3,
+    'num_data_points': 300
+}
