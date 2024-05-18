@@ -1,6 +1,6 @@
 from torch import nn
 import torch
-from arcmg.data import is_pt_in_attractor
+
 
 """todo:
 forward function should be the output of the netword

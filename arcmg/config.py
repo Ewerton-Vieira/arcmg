@@ -8,7 +8,6 @@ class Config:
 
     def auto_add_features(self):
         """automatically add num_label, optimizer, scheduler"""
-        self.num_labels = self.condensation_graph["num_nodes"] - 2
         self.num_attractors = len(self.attractor_list)
         if not hasattr(self, 'dropout'):
             self.dropout = 0
@@ -39,9 +38,6 @@ class Config:
         if type(self.verbose) is not bool:
             print("Verbose has the incorrect type. Must be " + str(bool) + ". Found a " + str(type(self.verbose)))
             exit()
-        #if type(self.penalty_matrix) is not np.ndarray:
-        #    print("Penalty matrix has the incorrect type. Must be " + str(np.ndarray) + ". Found a " + str(type(self.penalty_matrix)))
-        #    exit()
         if type(self.batch_size) is not int:
             print("Batch size has the incorrect type. Must be " + str(int) + ". Found a " + str(type(self.batch_size)))
             exit()

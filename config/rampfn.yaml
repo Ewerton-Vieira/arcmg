@@ -8,8 +8,6 @@ parameters:
   attractor_list:
     - - 1.0
     - - -1.0
-  # to delete
-  num_attractors: 2
   # network
   network_width: 32
   num_labels: 5
@@ -29,13 +27,3 @@ parameters:
   model_dir: output/rampfn/models/
   log_dir: output/rampfn/logs/
   output_dir: output/rampfn/
-  forward_exponent: 2
-  backward_exponent: 2
-  max_penalty: 2
-  separatrix_self_penalty: 2
-  base: 2
-  condensation_graph:
-    num_nodes: 7
-    edge_list: '[[0, 1], [1, 3], [3, 5], [0, 2], [2, 4], [4, 6]]'
-    
-    

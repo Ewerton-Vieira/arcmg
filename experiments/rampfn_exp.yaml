@@ -1,0 +1,66 @@
+generate_parameters:
+  ## system
+
+  ## network
+  # network_width:
+  num_labels: [3]
+  # label_threshold:
+  ## training
+  seed: !!python/object/apply:builtins.range [0,100]
+  verbose: False
+  forward_exponent: [1]
+  backward_exponent: [1]
+  separatrix_self_penalty: [2]
+  base: [2]
+  max_penalty: [4]
+  optimizer: [Adam, SGD, Adagrad, AdamW]
+  scheduler: [CyclicLR, ReduceLROnPlateau]
+
+      
+      
+  ## data
+  # data_file:
+  ## out
+
+parameters:
+  # system
+  name: rampfn
+  step: 1
+  domain:
+    - - -1.1
+      - 1.1
+  attractor_list:
+    - - 1.0
+    - - -1.0
+  # to delete
+  num_attractors: 2
+  # network
+  network_width: 32
+  num_labels: 5
+  optimizer: 'Adagrad'
+  input_dimension: 1
+  # training
+  seed: 3
+  epochs: 1000
+  patience: 100
+  batch_size: 100
+  learning_rate: 0.001
+  verbose: True 
+  # data
+  data_file: data/rampfn_data.csv
+  num_data_points: 300
+  # output
+  model_dir: output/rampfn/models/
+  log_dir: output/rampfn/logs/
+  output_dir: output/rampfn/
+  forward_exponent: 2
+  backward_exponent: 2
+  max_penalty: 100
+  separatrix_self_penalty: 2
+  scheduler: 'CyclicLR'
+  base: 2
+  condensation_graph:
+    - num_nodes: 7
+    - edge_list: '[[0, 1], [1, 3], [3, 5], [0, 2], [2, 4], [4, 6]]'
+  num_layers: 2
+  analyze_train_dynamics: false
