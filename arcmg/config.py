@@ -17,6 +17,8 @@ class Config:
             self.scheduler = 'ReduceLROnPlateau'
         if not hasattr(self, 'analyze_train_dynamics'):
             self.analyze_train_dynamics = False
+        if not hasattr(self, 'trajectory_length'):
+            self.trajectory_length = 1
 
     # needs to be updated
     def check_types(self):

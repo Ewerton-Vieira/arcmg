@@ -1,7 +1,7 @@
 from arcmg.training import ClassifierTraining
 from arcmg.config import Config
 from arcmg.data import Dataset
-from arcmg.plot import plot_classes, plot_loss
+from arcmg.plot import plot_classes, plot_loss, plot_classes_2D
 from torch.utils.data import DataLoader
 from arcmg.utils import find_classes, is_bistable, penalty_submatrix
 import argparse
@@ -141,7 +141,8 @@ def main(args, yaml_file):
 
         trainer.save_model('classifier') 
 
-        plot_classes(trainer.classifier, config)           
+        # plot_classes(trainer.classifier, config)  
+        plot_classes_2D(trainer.classifier, config)          
 
         train_losses = trainer.train_losses['loss_total']
         test_losses = trainer.test_losses['loss_total']
@@ -168,18 +169,17 @@ def main(args, yaml_file):
 if __name__ == "__main__":
 
 # 
-    yaml_file_path = "/Users/ewerton/Dropbox/Codes/arcmg/experiments/output/test"
-    yaml_file = "config.yaml"
+    yaml_file_path = "/Users/ewerton/Dropbox/Codes/arcmg/experiments/output/pendulum"
 
     parser = argparse.ArgumentParser()
     #  parser.add_argument('--job_index',help='Job index',type=int,default=0)
     parser.add_argument('--config_dir',help='Directory of config files',type=str,default=yaml_file_path)
-    parser.add_argument('--config',help='Config file inside config_dir',type=str,default=yaml_file)
+    parser.add_argument('--config',help='Config file inside config_dir',type=str,default="config.yaml")
     parser.add_argument('--transfer_learning',help='Config file inside config_dir',action='store_true')
     #  parser.add_argument('--verbose',help='Print training output',action='store_true')
-    #  parser.add_argument('--condensation_graph',help='Condensation graph file inside config_dir',type=str,default='condensation_graph.txt')
 
     args = parser.parse_args()
+
     # args.transfer_learning = True
 
     main(args, args.config) 

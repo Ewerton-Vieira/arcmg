@@ -62,9 +62,12 @@ class Dataset(Dataset):
 
     def __getitem__(self, idx):
         data_point = self.data[idx]
-        labeled_point_pair = [torch.tensor(data_point[:self.d]), 
-                              torch.tensor(data_point[self.d+1:-1]), 
+        labeled_point_pair = [data_point[:self.d], 
+                              data_point[self.d+1:-1], 
                               int(data_point[-1])]
+        # labeled_point_pair = [torch.tensor(data_point[:self.d]), 
+        #                       torch.tensor(data_point[self.d+1:-1]), 
+        #                       int(data_point[-1])]
 
         # labeled_point_pair has the form [tensor([x]), tensor([y]), y_label]
         return labeled_point_pair

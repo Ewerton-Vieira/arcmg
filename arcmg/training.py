@@ -43,11 +43,11 @@ class ClassifierTraining:
         return [element/sum_v for element in v]
     
     def scale_q_vector(self, q, label):
-        label = label // 2 # hight
-        sigma = 1
-        mean = label
-        for index, element in enumerate(q):  # index//2 + 1 (plus one because we do a shift)
-            q[index] = element * norm.pdf(index//2+1,mean,sigma)
+        # label = label // 2 # height
+        # sigma = 0.1
+        # mean = label * (self.num_labels - 1) // self.config.trajectory_length
+        # for index, element in enumerate(q):  # index//2 + 1 (plus one because we do a shift)
+        #     q[index] = element * norm.pdf(index//2+1,mean,sigma)
         return self.normalize_prob_vector(q)
 
     def q_probability_vector(self, y, data_label):
@@ -63,16 +63,13 @@ class ClassifierTraining:
                 Q_ += [q_]
             else:
 
-
-                
-
                 if data_label[i] != -1:
                     q_ = y_single_prob.tolist()
                     last = q_.pop()
                     for index in range(len(q_)):
                         if index%2 != data_label[i]%2:
                             q_[index] = 0
-                    q_.append(last)
+                    q_.append(1.5*last)
                     q_ = self.scale_q_vector(q_, data_label[i])
                 
                 else:

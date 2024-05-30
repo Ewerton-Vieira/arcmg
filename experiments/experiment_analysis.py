@@ -10,7 +10,7 @@ from arcmg.config import Config
 import argparse
 import os
 from arcmg.plot import plot_loss_histogram, make_edge, make_arrow
-import networkx as nx
+import network as nx
 import plotly.graph_objects as go
 import plotly.offline as py
 

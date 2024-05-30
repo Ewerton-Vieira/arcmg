@@ -38,7 +38,7 @@ def main(args):
 
 if __name__ == "__main__":
 
-    yaml_file_path = os.getcwd() + "/output/test/"
+    yaml_file_path = os.getcwd() + "/output/ramp/"
     yaml_file = "config.yaml"
 
     parser = argparse.ArgumentParser()

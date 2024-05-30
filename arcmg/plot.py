@@ -1,5 +1,6 @@
 import torch 
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 from functools import partial
 import itertools
@@ -301,6 +302,47 @@ def compute_num_classes_found(model, domain, input_dimension, num_points_in_mesh
         print('classification: ', classification)
     classes_found_list = list(set(classes_found_list))
     return len(classes_found_list)
+
+def sample_state(self, num_pts=1, region = False):
+    if region is False:
+        region = self.get_true_bounds()
+    sample_ = np.random.uniform(region[:,0], region[:,1], size=(num_pts, self.dimension()))
+    return self.transform(sample_)[0]
+    
+
+def plot_classes_2D(model, config, name = ""):
+    num_classes = model.output_layer[0].out_features
+    X = np.random.uniform(config.domain[0], config.domain[1], size=(config.num_data_points, config.input_dimension))
+    X=torch.Tensor(X)
+    Z = model.vector_of_probabilities(X)
+    Z = torch.argmax(Z, dim=1)
+    
+    X = X.detach().numpy()
+    for i in range(num_classes):
+        X_temp = []
+        for k, x in enumerate(X):
+            if int(Z[k]) == i:
+                X_temp.append(x)
+
+        X_temp = np.array(X_temp)
+        if len(X_temp) == 0:
+            continue
+        plt.scatter(X_temp[:,0], X_temp[:,1], marker=".", label="class:"+str(i))
+
+
+    # fig, ax = plt.subplots()
+    # scatter = ax.scatter(X[:,0].detach().numpy(), X[:,1].detach().numpy(), c=Z.detach().numpy(), marker=".")
+    # # legend1 = ax.legend(*scatter.legend_elements(), title="Classes")
+    # # ax.add_artist(legend1)
+
+    # # ax.xlabel('x_0')
+    # # ax.ylabel('x_1')
+    plt.legend()
+    plt.title(f'Classes')
+
+    plt.savefig(f'{config.output_dir}plot{name}.png')
+    # plt.show()
+    plt.close()
 
 def plot_classes(model, config, name = ""):
     num_classes = model.output_layer[0].out_features
