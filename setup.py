@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup (
     name = "arcmg",
-    version = "0.0.1",
+    version = "0.0.3",
     author = "Brittany Gelb, Ewerton Rocha Vieira",
     url = "https://github.com/Ewerton-Vieira/arcmg.git",
     description = "arcmg: Attracting Regions Classifier by Morse Graph",

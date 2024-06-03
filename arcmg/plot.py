@@ -315,7 +315,25 @@ def plot_classes_2D(model, config, name = ""):
     X = np.random.uniform(config.domain[0], config.domain[1], size=(config.num_data_points, config.input_dimension))
     X=torch.Tensor(X)
     Z = model.vector_of_probabilities(X)
-    Z = torch.argmax(Z, dim=1)
+    # Z = torch.argmax(Z, dim=1)
+
+    Z_max = torch.max(Z, dim=1)
+    
+
+    # threshold = 0.9
+    # for i,z in enumerate(Z_max[0]):
+    #     if z < threshold:
+    #         Z_max[1][i] = config.num_labels - 1
+
+    Z = Z_max[1]
+    
+
+
+
+
+
+
+    # Z = torch.argmax(Z, dim=1)
     
     X = X.detach().numpy()
     for i in range(num_classes):
@@ -327,7 +345,7 @@ def plot_classes_2D(model, config, name = ""):
         X_temp = np.array(X_temp)
         if len(X_temp) == 0:
             continue
-        plt.scatter(X_temp[:,0], X_temp[:,1], marker=".", label="class:"+str(i))
+        plt.scatter(X_temp[:,0], X_temp[:,1], s=1, marker=".", label="class:"+str(i))
 
 
     # fig, ax = plt.subplots()

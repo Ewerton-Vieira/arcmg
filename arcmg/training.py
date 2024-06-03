@@ -38,91 +38,156 @@ class ClassifierTraining:
             os.makedirs(model_path)
         self.classifier = torch.load(os.path.join(model_path, f'{name}.pt'))
 
-    def normalize_prob_vector(self, v):
-        sum_v = sum(v)
-        return [element/sum_v for element in v]
+    # def normalize_prob_vector(self, v):
+    #     sum_v = sum(v)
+    #     return [element/sum_v for element in v]
     
-    def scale_q_vector(self, q, label):
-        # label = label // 2 # height
-        # sigma = 0.1
-        # mean = label * (self.num_labels - 1) // self.config.trajectory_length
-        # for index, element in enumerate(q):  # index//2 + 1 (plus one because we do a shift)
-        #     q[index] = element * norm.pdf(index//2+1,mean,sigma)
-        return self.normalize_prob_vector(q)
+    # def scale_q_vector(self, q, label):
+    #     # label = label // 2 # height
+    #     # sigma = 0.1
+    #     # mean = label * (self.num_labels - 1) // self.config.trajectory_length
+    #     # for index, element in enumerate(q):  # index//2 + 1 (plus one because we do a shift)
+    #     #     q[index] = element * norm.pdf(index//2+1,mean,sigma)
+    #     return self.normalize_prob_vector(q)
 
-    def q_probability_vector(self, y, data_label):
+    # def q_probability_vector(self, y, data_label):
 
-        d = self.num_labels - 2  # denominator
+    #     d = self.num_labels - 2  # denominator
 
-        Q_ = list()
-        for i, y_single_prob in enumerate(y):
+    #     Q_ = list()
+    #     for i, y_single_prob in enumerate(y):
 
-            if data_label[i] == 1 or data_label[i] == 0:
-                q_ = [0]*self.num_labels
-                q_[data_label[i]] = 1
-                Q_ += [q_]
-            else:
+    #         if data_label[i] == 1 or data_label[i] == 0:
+    #             q_ = [0]*self.num_labels
+    #             q_[data_label[i]] = 1
+    #             Q_ += [q_]
+    #         else:
 
-                if data_label[i] != -1:
-                    q_ = y_single_prob.tolist()
-                    last = q_.pop()
-                    for index in range(len(q_)):
-                        if index%2 != data_label[i]%2:
-                            q_[index] = 0
-                    q_.append(1.5*last)
-                    q_ = self.scale_q_vector(q_, data_label[i])
+    #             if data_label[i] != -1:
+    #                 q_ = y_single_prob.tolist()
+    #                 last = q_.pop()
+    #                 for index in range(len(q_)):
+    #                     if index%2 != data_label[i]%2:
+    #                         q_[index] = 0
+    #                 q_.append(1.5*last)
+    #                 q_ = self.scale_q_vector(q_, data_label[i])
                 
-                else:
-                    p_separatrix = sum(y_single_prob[self.num_labels-3:self.num_labels])
-                    p_correction = 1/3 * p_separatrix / d
-                    q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_correction).tolist() 
-                    q_ += [2*p_separatrix/3 + p_correction]
+    #             else:
+    #                 p_separatrix = sum(y_single_prob[self.num_labels-3:self.num_labels])
+    #                 p_correction = 1/3 * p_separatrix / d
+    #                 q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_correction).tolist() 
+    #                 q_ += [2*p_separatrix/3 + p_correction]
 
 
-                # p_separatrix = sum(y_single_prob[self.num_labels-3:self.num_labels])
-                # p_correction = 1/3 * p_separatrix / d
-                # q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_correction).tolist() 
-                # q_ += [2*p_separatrix/3 + p_correction]
+    #             # p_separatrix = sum(y_single_prob[self.num_labels-3:self.num_labels])
+    #             # p_correction = 1/3 * p_separatrix / d
+    #             # q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_correction).tolist() 
+    #             # q_ += [2*p_separatrix/3 + p_correction]
 
-                # if data_label[i] != -1:
-                #     last = q_.pop()
-                #     for index in range(len(q_)):
-                #         if index%2 != data_label[i]%2:
-                #             q_[index] = 0
-                #     q_.append(last)
-                #     sum_q = sum(q_)
-                #     q_=[element/sum_q for element in q_]
+    #             # if data_label[i] != -1:
+    #             #     last = q_.pop()
+    #             #     for index in range(len(q_)):
+    #             #         if index%2 != data_label[i]%2:
+    #             #             q_[index] = 0
+    #             #     q_.append(last)
+    #             #     sum_q = sum(q_)
+    #             #     q_=[element/sum_q for element in q_]
                     
-                Q_ += [q_]
+    #             Q_ += [q_]
 
                             
 
 
-            # if data_label[i] != 1 and data_label[i] != 0:
+    #         # if data_label[i] != 1 and data_label[i] != 0:
                 
-            #     p_separatrix = sum(y_single_prob[self.num_labels-3:self.num_labels])
-            #     p_correction = 1/3 * p_separatrix / d
-            #     q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_correction).tolist() 
-            #     q_ += [2*p_separatrix/3 + p_correction]
-            #     Q_ += [q_]
+    #         #     p_separatrix = sum(y_single_prob[self.num_labels-3:self.num_labels])
+    #         #     p_correction = 1/3 * p_separatrix / d
+    #         #     q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_correction).tolist() 
+    #         #     q_ += [2*p_separatrix/3 + p_correction]
+    #         #     Q_ += [q_]
 
-            # # if data_label[i] == -1:
-            # #     p_separatrix = y_single_prob[self.num_labels-1]/d
-            # #     q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_separatrix).tolist() 
-            # #     q_ += [sum(y_single_prob[self.num_labels-3:self.num_labels-1]) + p_separatrix]
-            # #     Q_ += [q_]
+    #         # # if data_label[i] == -1:
+    #         # #     p_separatrix = y_single_prob[self.num_labels-1]/d
+    #         # #     q_ = [0,0] + (y_single_prob[0:self.num_labels-3] + p_separatrix).tolist() 
+    #         # #     q_ += [sum(y_single_prob[self.num_labels-3:self.num_labels-1]) + p_separatrix]
+    #         # #     Q_ += [q_]
 
-            # # if data_label[i] == -1:
-            # #     q_ = [0,0] + y_single_prob[0:self.num_labels-3].tolist() 
-            # #     q_ += [sum(y_single_prob[self.num_labels-3:self.num_labels]).tolist()]
-            # #     Q_ += [q_]
+    #         # # if data_label[i] == -1:
+    #         # #     q_ = [0,0] + y_single_prob[0:self.num_labels-3].tolist() 
+    #         # #     q_ += [sum(y_single_prob[self.num_labels-3:self.num_labels]).tolist()]
+    #         # #     Q_ += [q_]
 
-            # else:
-            #     q_ = [0]*self.num_labels
-            #     q_[data_label[i]] = 1
-            #     Q_ += [q_]
+    #         # else:
+    #         #     q_ = [0]*self.num_labels
+    #         #     q_[data_label[i]] = 1
+    #         #     Q_ += [q_]
         
-        return torch.Tensor(Q_)
+    #     return torch.Tensor(Q_)
+    
+    def q_probability_vector(self, y, data_label):
+
+        Q = list()
+
+        height = self.num_labels // 2 + 1
+        for i, y_single_prob in enumerate(y):
+
+            q = [0] * self.num_labels
+
+            
+            if data_label[i] == 1 or data_label[i] == 0:  #point adjancent to attractor 
+                q[data_label[i]] = 1
+
+            elif data_label[i] == -1:  # point without trajectory ending in an attractor
+                q[2::] = y_single_prob[0:-3]
+                q[-1] = 2/3 * sum(y_single_prob[self.num_labels-3:self.num_labels])
+                q = torch.special.softmax(q)
+
+            
+            # elif data_label[i] > 3:
+            #     q[2] = 1
+
+            else:
+                q[data_label[i]%2] = 1
+
+                # if data_label[i]%2 == 0:
+                #     q[::2] = y_single_prob[::2]
+                # else:
+                #     q[1::2] = y_single_prob[1::2]
+                #     q[-1] = y_single_prob[-1::]
+
+
+            # else:  # point with trajectory ending in an attractor
+            #     height_index = data_label[i] // 2  # how far is the point from the attractor (stepwise)
+                
+            #     # correction needed to give 2/3 change for the separatrix
+            #     alpha = np.log(8 * max(height_index + 3 - height, 1))  
+
+            #     # alpha = 1
+
+            #     traj_label = min(height_index, height-1)  # 
+
+            #     Z = torch.zeros(height)
+
+            #     if data_label[i]%2 == 0:
+            #         z_prop = y_single_prob[::2]
+            #     else:
+            #         z_prop = torch.cat((y_single_prob[1::2], y_single_prob[-1::]), 0)
+
+            #     Z[traj_label] = alpha * sum(z_prop[traj_label::])
+            #     Z[traj_label-1] = sum(z_prop[0:traj_label])
+                
+            #     Z[0:traj_label+1] = torch.special.softmax(Z[0:traj_label+1],0)
+
+            #     if data_label[i]%2 == 0:
+            #         q[::2] = Z
+            #     else:
+            #         q[1::2] = Z[0:traj_label]
+            #         q[-1] = Z[-1]
+                
+            Q.append(q)
+
+        return torch.Tensor(Q)
+    
 
     def loss_function(self, forward_dict):
         probs_x = forward_dict['probs_x']
