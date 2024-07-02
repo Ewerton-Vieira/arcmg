@@ -6,6 +6,8 @@ from functools import partial
 import itertools
 from cycler import cycler
 import matplotlib.pyplot as plt
+import seaborn as sns
+from copy import copy
 
 ''' filled_hist and stack_hist are taken from the following link: https://matplotlib.org/stable/gallery/lines_bars_and_markers/filled_step.html '''
 
@@ -309,23 +311,109 @@ def sample_state(self, num_pts=1, region = False):
     sample_ = np.random.uniform(region[:,0], region[:,1], size=(num_pts, self.dimension()))
     return self.transform(sample_)[0]
     
+def heatmap(model, config, name="heatmap"):
+    size = 500
+
+    xs = torch.linspace(config.domain[0][0], config.domain[1][0], size)
+    ys = torch.linspace(config.domain[1][1], config.domain[0][1], size)
+    label = 5
+    
+    X,Y = torch.meshgrid(xs, ys, indexing='xy')
+    # Z = torch.stack((X,Y))
+
+    # Z = model.vector_of_probabilities(Z)
+
+    Z = np.zeros(X.shape)
+    data_xy = []
+
+    # torch.equal(torch.cat(tuple(torch.dstack([X, Y]))),torch.cartesian_prod(x, y))
+
+    prob_vector = torch.cartesian_prod(xs, ys)
+    prob_vector = model.vector_of_probabilities(prob_vector)
+
+    Z = prob_vector[:, label].reshape(len(Z), len(Z)).detach().numpy()
+    Z=Z.T
+    vmin = 0.4
+
+
+    if True:  # plot Lyaponov function
+
+        prob_vector_maxK =torch.topk(prob_vector, 2)
+        threshold = 0.98
+        for i,z in enumerate(prob_vector_maxK[0]):
+            if z[0] < threshold and prob_vector_maxK[1][i][0]%2 != prob_vector_maxK[1][i][1]%2:
+                prob_vector[i] = torch.Tensor([-10]*config.num_labels)
+
+        odd = True
+        Lyp = (config.num_labels//2 +1) * prob_vector[:, config.num_labels-1].detach().numpy()
+        for label_index in range(odd,config.num_labels-1,2):
+            Lyp += ((label_index + odd)//2)* prob_vector[:, label_index].detach().numpy()
+        for label_index in range(not odd,config.num_labels-1,2):
+            Lyp += (config.num_labels//2 +2) * prob_vector[:, label_index].detach().numpy()
+        # Lyp=Lyp.reshape(-1, 1)
+        Z = Lyp.reshape(len(Z), len(Z))
+        Z=Z.T
+        vmin=odd
+        vmax = config.num_labels//2 +1
+
+
+
+        my_cmap = copy(plt.cm.YlGnBu)
+        my_cmap.set_over("lightgray")
+        my_cmap.set_under("white")
+
+
+
+    
+    # for i in range(len(Z)):
+    #     for j in range(len(Z)):
+    #         point = torch.Tensor([X[i,j],Y[i,j]]).unsqueeze(0)
+    #         data_xy.append(point)
+    
+            
+    # data_tensor = torch.cat(data_xy, dim=0)
+              
+    # probability = model.vector_of_probabilities(data_tensor)
+    # Z  = probability[:, label].reshape(len(Z), len(Z)).detach().numpy()
+
+
+    
+    ax = sns.heatmap(Z, vmax=vmax, vmin=vmin, cmap=my_cmap)
+        # Remove the axis numbers
+    ax.set_xticks([])
+    ax.set_yticks([])
+    plt.savefig(f'{config.output_dir}plot{name}.png')
+
+
 
 def plot_classes_2D(model, config, name = ""):
+    cmap=plt.get_cmap('viridis', 256)
+
+    cmap_norm = matplotlib.colors.Normalize(vmin=0, vmax=config.num_labels-1)
+
     num_classes = model.output_layer[0].out_features
     X = np.random.uniform(config.domain[0], config.domain[1], size=(config.num_data_points, config.input_dimension))
     X=torch.Tensor(X)
     Z = model.vector_of_probabilities(X)
     # Z = torch.argmax(Z, dim=1)
 
-    Z_max = torch.max(Z, dim=1)
-    
+    # Z_max = torch.max(Z, dim=1)
 
     # threshold = 0.9
     # for i,z in enumerate(Z_max[0]):
     #     if z < threshold:
     #         Z_max[1][i] = config.num_labels - 1
+    # Z = Z_max[1]
 
-    Z = Z_max[1]
+    prob_vector_maxK =torch.topk(Z, 2)
+    threshold = 0.9
+    for i,z in enumerate(prob_vector_maxK[0]):
+        if z[0] < threshold and prob_vector_maxK[1][i][0]%2 != prob_vector_maxK[1][i][1]%2:
+            prob_vector_maxK[1][i][0] = config.num_labels - 1
+    Z = prob_vector_maxK[1][:,0]
+    
+
+
     
 
 
@@ -337,6 +425,9 @@ def plot_classes_2D(model, config, name = ""):
     
     X = X.detach().numpy()
     for i in range(num_classes):
+        clr = matplotlib.colors.to_hex(cmap(cmap_norm(i)))
+
+
         X_temp = []
         for k, x in enumerate(X):
             if int(Z[k]) == i:
@@ -345,7 +436,7 @@ def plot_classes_2D(model, config, name = ""):
         X_temp = np.array(X_temp)
         if len(X_temp) == 0:
             continue
-        plt.scatter(X_temp[:,0], X_temp[:,1], s=1, marker=".", label="class:"+str(i))
+        plt.scatter(X_temp[:,0], X_temp[:,1], s=1, marker=".", label="class:"+str(i), c=clr)
 
 
     # fig, ax = plt.subplots()

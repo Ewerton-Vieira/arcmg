@@ -147,13 +147,47 @@ class ClassifierTraining:
             #     q[2] = 1
 
             else:
-                q[data_label[i]%2] = 1
+                position = min(data_label[i], self.num_labels - 1)
+                q[position] = 1
 
-                # if data_label[i]%2 == 0:
-                #     q[::2] = y_single_prob[::2]
-                # else:
-                #     q[1::2] = y_single_prob[1::2]
-                #     q[-1] = y_single_prob[-1::]
+                # q[position::2] = y_single_prob[position::2]
+
+                # q[position] = 1 - sum(q[position::2]) + q[position]
+
+                # if np.linalg.norm(sum(q).detach().numpy() - 1) > 0.001:
+                #     raise TypeError(f"not a probability vector")
+                
+            # else:
+            #     mod = bool(data_label[i]%2)  # even or odd
+            #     q[mod+2::2] = y_single_prob[mod+2::2]  # slice with 2 shift
+
+            #     position = min(data_label[i], self.num_labels - 1)
+
+            #     q[position] = 1 - sum(q[mod+2::2]) + q[position]
+
+            #     if np.linalg.norm(sum(q).detach().numpy() - 1) > 0.001:
+            #         raise TypeError(f"not a probability vector")
+                    
+
+                
+
+
+
+                ## normlizing to obtain a probability vector
+                # inv_mod = not mod  # odd or even
+                # S = sum(y_single_prob[inv_mod::2]) + y_single_prob[mod::2][0]  # sum all remaining probability to at to q[-1]
+                # q[-1] += S 
+                
+
+
+            # else:
+            #     q[data_label[i]%2] = 1
+
+            #     # if data_label[i]%2 == 0:
+            #     #     q[::2] = y_single_prob[::2]
+            #     # else:
+            #     #     q[1::2] = y_single_prob[1::2]
+            #     #     q[-1] = y_single_prob[-1::]
 
 
             # else:  # point with trajectory ending in an attractor

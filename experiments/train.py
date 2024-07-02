@@ -1,7 +1,7 @@
 from arcmg.training import ClassifierTraining
 from arcmg.config import Config
 from arcmg.data import Dataset
-from arcmg.plot import plot_classes, plot_loss, plot_classes_2D
+from arcmg.plot import plot_classes, plot_loss, plot_classes_2D, heatmap
 from torch.utils.data import DataLoader
 from arcmg.utils import find_classes, is_bistable, penalty_submatrix
 import argparse
@@ -119,11 +119,11 @@ def main(args, yaml_file):
 
         print(trainer.classifier)
         # print(penalty_matrix)        
-        if args.transfer_learning:
-            transfer_learning_training(trainer, config)
+        # if args.transfer_learning:
+        #     transfer_learning_training(trainer, config)
 
-        else:
-            trainer.train()
+        # else:
+        #     trainer.train()
 
         # if config.dropout != 0:  # after training with dropout, set it to zero and train more
         #     name_before_dropout_zero = "_dropout_not_0"
@@ -139,10 +139,13 @@ def main(args, yaml_file):
 
 
 
-        trainer.save_model('classifier') 
+        # trainer.save_model('classifier') 
+
+        trainer.load_model('classifier')
 
         # plot_classes(trainer.classifier, config)  
-        plot_classes_2D(trainer.classifier, config)          
+        # plot_classes_2D(trainer.classifier, config)
+        heatmap(trainer.classifier, config)          
 
         train_losses = trainer.train_losses['loss_total']
         test_losses = trainer.test_losses['loss_total']
