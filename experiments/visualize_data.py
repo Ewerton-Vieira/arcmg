@@ -28,7 +28,7 @@ def main(args, yaml_file):
     dataset = Dataset(config)
 
     # dataset = TrajectoryDataset(config)
-    loader = DataLoader(dataset, batch_size=1, shuffle=True)
+    loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     assert len(dataset) >= args.num_trajs, "Not enough trajectories in dataset"
     idxes = np.random.choice(len(dataset), args.num_trajs, replace=False)
@@ -47,8 +47,8 @@ def main(args, yaml_file):
         z = np.array([traj[0].detach().numpy(),traj[1].detach().numpy()])
         
         ax.plot(z[:,0], z[:,1],color='black')
-        # ax.scatter(z[0][0], z[0][1], color='r', marker='.')
-        # ax.scatter(z[-1][0], z[-1][1], color='g', marker='x')
+        ax.scatter(z[0][0], z[0][1], color='r', marker='.')
+        ax.scatter(z[-1][0], z[-1][1], color='g', marker='x')
 
         
         
@@ -60,16 +60,34 @@ def main(args, yaml_file):
         
 if __name__ == "__main__":
 
-# 
-    yaml_file_path = "/Users/ewerton/Dropbox/Codes/arcmg/experiments/output/pendulum"
+# # 
+#     yaml_file_path = "/Users/ewerton/Dropbox/Codes/arcmg/experiments/output/pendulum"
+
+#     parser = argparse.ArgumentParser()
+#     #  parser.add_argument('--job_index',help='Job index',type=int,default=0)
+#     parser.add_argument('--config_dir',help='Directory of config files',type=str,default=yaml_file_path)
+#     parser.add_argument('--config',help='Config file inside config_dir',type=str,default="config.yaml")
+#     #  parser.add_argument('--verbose',help='Print training output',action='store_true')
+#     parser.add_argument('--output_dir',type=str, default="")
+#     parser.add_argument('--num_trajs', type=int, default=300)
+#     args = parser.parse_args()
+
+#     main(args, args.config) 
+
+    # yaml_file_path = os.getcwd() + "/output/ramp/"
+    yaml_file_path = os.getcwd() + "/output/ramp_rot/"
+    yaml_file = "config.yaml"
+    # save_dir = "/data/ramp"
+    save_dir = "/output/ramp_rot"
+    num_traj = 1
 
     parser = argparse.ArgumentParser()
     #  parser.add_argument('--job_index',help='Job index',type=int,default=0)
     parser.add_argument('--config_dir',help='Directory of config files',type=str,default=yaml_file_path)
-    parser.add_argument('--config',help='Config file inside config_dir',type=str,default="config.yaml")
+    parser.add_argument('--config',help='Config file inside config_dir',type=str,default=yaml_file)
     #  parser.add_argument('--verbose',help='Print training output',action='store_true')
-    parser.add_argument('--output_dir',type=str, default="")
-    parser.add_argument('--num_trajs', type=int, default=300)
+    parser.add_argument('--output_dir',type=str, default=save_dir)
+    parser.add_argument('--num_trajs', type=int, default=num_traj)
     args = parser.parse_args()
 
     main(args, args.config) 

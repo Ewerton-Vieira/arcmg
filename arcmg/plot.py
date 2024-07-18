@@ -312,7 +312,7 @@ def sample_state(self, num_pts=1, region = False):
     return self.transform(sample_)[0]
     
 def heatmap(model, config, name="heatmap"):
-    size = 500
+    size = 100
 
     xs = torch.linspace(config.domain[0][0], config.domain[1][0], size)
     ys = torch.linspace(config.domain[1][1], config.domain[0][1], size)

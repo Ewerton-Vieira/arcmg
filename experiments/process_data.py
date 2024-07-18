@@ -39,13 +39,17 @@ def main(args):
         else:
             label = get_label(args.system, data[-1])
         new_data = []
+
+        new_data.append(data[-1] + [label])
         while data:
             end_point = data.pop()
             if label == -1:
                 new_data.append(end_point + [label])
             else:
-                new_data.append(end_point + [label])
-                label += 2
+                if get_label(args.system, end_point) is False:
+                    label += 2
+                    new_data.append(end_point + [label])
+                    
             step_counter = args.step - 1
             while data and step_counter > 0:
                 data.pop()

@@ -22,22 +22,22 @@ class BaseSystem:
         sample_ = np.random.uniform(region[:,0], region[:,1], size=(num_pts, self.dimension()))
         return self.transform(sample_)[0]
     
-    def sample_trajectory(self, size=4, region = False):
+    def sample_trajectory(self, length=4, region = False):
         if region is False:
             region = self.get_true_bounds()
         initial_point = self.sample_state(num_pts=1, region=region)
         trajectory = [initial_point]
         temp_ =  initial_point
-        for i in range(1, size):
+        for i in range(1, length):
             temp_ = self.f(temp_)
             trajectory.append(temp_)
         return trajectory
     
-    def label_trajectory(self, size=4, region = False):
+    def label_trajectory(self, length=4, region = False):
         if region is False:
             region = self.get_true_bounds()
 
-        trajectory = self.sample_trajectory(size, region=region)
+        trajectory = self.sample_trajectory(length, region=region)
         labeled_traj = []
         label = -1
         while trajectory:

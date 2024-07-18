@@ -45,8 +45,14 @@ class Dataset(Dataset):
 
         for f in tqdm(os.listdir(config.data_file)):
             data = np.loadtxt(os.path.join(config.data_file, f), delimiter=',')
+            if data.ndim == 1:
+                continue
+            
             X.append(data[:-1])
             Y.append(data[1:])
+            
+            # if data[:-1].shape[1] != 3:
+            #     pass  
 
         self.X = np.vstack(X)
         self.Y = np.vstack(Y)
