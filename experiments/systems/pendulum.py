@@ -18,16 +18,18 @@ class Pendulum(BaseSystem):
     #     return NotImplementedError
     
     def attractors(self):
-        return [np.array([0,0]), np.array([2,0]), np.array([-2,0])]
+        return [np.array([0,0]), np.array([2.1,0]), np.array([-2.1,0])]
 
-    def which_attracting_region(self, s):
+    def which_attracting_region(self, s, rad):
         """defaut -1: attracting region not specified"""
         s=np.array(s)
-        att_neighborh_radius = 0.8
+        att_neighborh_radius = rad
         attractors = self.attractors()
         if np.linalg.norm(s - attractors[0]) < att_neighborh_radius:
-            return 1
-        elif np.linalg.norm(s - attractors[1]) < att_neighborh_radius or np.linalg.norm(s - attractors[2]) < att_neighborh_radius:
-            return 0
+            return 0, attractors[0]
+        elif np.linalg.norm(s - attractors[1]) < att_neighborh_radius: 
+            return 1, attractors[1]
+        elif np.linalg.norm(s - attractors[2]) < att_neighborh_radius:
+            return 2, attractors[2]
         else:
-            return False
+            return -1, None
