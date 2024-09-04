@@ -15,7 +15,6 @@ def get_label(system, end_point):
     else:
         return NotImplementedError
 
-
 def main(args, kwargs):
 
     save_base_data = kwargs.get('save_base_data', False)
@@ -98,52 +97,17 @@ def main(args, kwargs):
         print("Writing dataset...")
         np.savetxt(os.path.join(save_dir, f"dataset_{dataset_size}_{level_interval}.csv"), dataset, delimiter=',')
         print("Done", dataset.shape)
-    
+
     if save_images:
-        # plt.figure(figsize=(10, 20))
-        # plt.grid() 
-        colors = plt.cm.rainbow(np.linspace(0, 1, max_levels+1))
-        # rainbow(np.linspace(0, 1, max_levels+1))
-        for i in tqdm(range(1, max_levels+1)):
-            levels = dataset[dataset[:, 2] < i*level_interval]
-            levels = levels[levels[:, 2] >= (i-1)*level_interval]
-            if levels.shape[0] == 0:
-                print("No more levels", i*level_interval)
-                break
-            plt.scatter(levels[:, 0], levels[:, 1], s=0.1,  color=colors[i], label="Level {}".format(i-1))
-            # plt.legend()
-            plt.xlim(-3.14, 3.14)
-            plt.ylim(-6.28, 6.28)
-            
-            plt.savefig(f'{folder}/level_{i-1}.png')
-        plt.close()
-
-    # from all the saved images, create a video using opencv
-    if make_video:
-        img_array = []
-        for filename in tqdm(sorted(os.listdir(folder), key=lambda x: int(x.split("_")[1].split(".")[0]))):
-            img = cv2.imread(os.path.join(folder, filename))
-            height, width, layers = img.shape
-            size = (width, height)
-            img_array.append(img)
-
-        # save the video as mp4 
-        out = cv2.VideoWriter(f'{folder}.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 5, size)
-
-        for i in range(len(img_array)):
-            out.write(img_array[i])
-        out.release()
-    
-
-    # plot dataset here with dataset[:, :2] as x and y and dataset[:, 4] as color
-    print('plotting now...')
-    plt.figure(figsize=(10, 10))
-    plt.grid()
-    plt.scatter(dataset[:, 0], dataset[:, 1], s=0.1, c=dataset[:, 4], cmap='rainbow')
-    plt.colorbar()
-    plt.xlim(-3.14, 3.14)
-    plt.ylim(-6.28, 6.28)
-    plt.savefig(f'level_{dataset_size}_{level_interval}.png')
+        # plot dataset here with dataset[:, :2] as x and y and dataset[:, 4] as color
+        print('plotting now...')
+        plt.figure(figsize=(10, 10))
+        plt.grid()
+        plt.scatter(dataset[:, 0], dataset[:, 1], s=0.1, c=dataset[:, 4], cmap='rainbow')
+        plt.colorbar()
+        plt.xlim(-3.14, 3.14)
+        plt.ylim(-6.28, 6.28)
+        plt.savefig(f'level_{dataset_size}_{level_interval}.png')
 
 
 if __name__ == "__main__":
@@ -151,9 +115,9 @@ if __name__ == "__main__":
     step = 5
     # TODO: use config file instead of args and kwargs
     kwargs = dict()
-    kwargs['save_base_data'] = False # change this everytime you change the dataset size and/or the attractor_radius
+    kwargs['save_base_data'] = True # change this everytime you change the dataset size and/or the attractor_radius
     kwargs['save_final_data'] = True
-    kwargs['save_images'] = False
+    kwargs['save_images'] = True
     kwargs['make_video'] = False
     kwargs['radius'] = 0.05
     kwargs['folder'] = "levels"
