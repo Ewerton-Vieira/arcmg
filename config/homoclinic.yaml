@@ -1,0 +1,33 @@
+parameters:
+  # system
+  name: homoclinic
+  step: 1
+  domain:
+    - - -1.0
+      - 1.0
+    - - -1.0
+      - 1.0
+  attractor_list:
+    - - 1.0
+      - 0
+    - - -1.0
+      - 0
+  # network
+  network_width: 32
+  num_labels: 5
+  label_threshold: 0.5
+  input_dimension: 1
+  # training
+  seed: 3
+  epochs: 500
+  patience: 50
+  batch_size: 100
+  learning_rate: 0.001
+  verbose: True 
+  # data
+  data_file: data/homoclinic_data.csv
+  num_data_points: 300
+  # output
+  model_dir: output/homoclinic/models/
+  log_dir: output/homoclinic/logs/
+  output_dir: output/homoclinic/
