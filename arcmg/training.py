@@ -139,8 +139,8 @@ class ClassifierTraining:
 
             elif data_label[i] == -1:  # point without trajectory ending in an attractor
                 q[2::] = y_single_prob[0:-3]
-                q[-1] = 2/3 * sum(y_single_prob[self.num_labels-3:self.num_labels])
-                q = torch.special.softmax(q)
+                q += [2/3 * sum(y_single_prob[self.num_labels-3:self.num_labels])]
+                q = torch.special.softmax(torch.Tensor(q), dim=0).tolist()
 
             
             # elif data_label[i] > 3:

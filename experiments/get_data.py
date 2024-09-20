@@ -7,7 +7,7 @@ import os
 import yaml
 import numpy as np
 
-slope = 2
+slope = 1.75
 
 # Right now this file is creating data with a uniform distribution on specified set of intervals
 
@@ -30,6 +30,11 @@ def main(args):
     else:
         NotImplemented
 
+
+    # a = Ramp_system.f(np.array([1,0]))
+    # b = Ramp_system.f(np.array([-1,0]))
+    # exit()
+
         
 
     save_dir = os.getcwd() + args.save_dir
@@ -39,8 +44,7 @@ def main(args):
 
     counter = 0
     for i in range(args.num_traj):
-        traj = Ramp_system.label_trajectory(length=length, region=np.array([[-0.4, 0.4]]+[[-1, 1]]*(config.input_dimension-1)))
-
+        traj = Ramp_system.label_trajectory(length=length, region=np.array([[-1, 1]]+[[-1, 1]]*(config.input_dimension-1)))
         traj = np.array(traj)
         np.savetxt(f"{save_dir}/{counter}.txt",traj,delimiter=",")
         counter += 1
@@ -52,8 +56,8 @@ if __name__ == "__main__":
     yaml_file = "config.yaml"
     # save_dir = "/data/ramp"
     save_dir = "/data/ramp_rot"
-    num_traj = 1
-    length = 100
+    num_traj = 1000
+    length = 4
 
     parser = argparse.ArgumentParser()
     #  parser.add_argument('--job_index',help='Job index',type=int,default=0)

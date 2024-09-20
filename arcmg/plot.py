@@ -316,7 +316,7 @@ def heatmap(model, config, name="heatmap"):
 
     xs = torch.linspace(config.domain[0][0], config.domain[1][0], size)
     ys = torch.linspace(config.domain[1][1], config.domain[0][1], size)
-    label = 5
+    label = config.num_labels - 1
     
     X,Y = torch.meshgrid(xs, ys, indexing='xy')
     # Z = torch.stack((X,Y))
@@ -328,15 +328,47 @@ def heatmap(model, config, name="heatmap"):
 
     # torch.equal(torch.cat(tuple(torch.dstack([X, Y]))),torch.cartesian_prod(x, y))
 
-    prob_vector = torch.cartesian_prod(xs, ys)
-    prob_vector = model.vector_of_probabilities(prob_vector)
+    xy = torch.cartesian_prod(xs, ys)
+    prob_vector = model.vector_of_probabilities(xy)
 
-    Z = prob_vector[:, label].reshape(len(Z), len(Z)).detach().numpy()
-    Z=Z.T
+    Z = prob_vector[:, label].reshape(len(Z), len(Z)).detach().numpy()  # maybe delete
+    Z=Z.T  # maybe delete
+
     vmin = 0.4
 
+    if True:  # plot function used for SGD 
+        Z = model.diff_prob_odd_even(xy).detach().numpy().reshape(len(Z), len(Z))
 
-    if True:  # plot Lyaponov function
+        # Lyp = []
+        # for i,z in enumerate(prob_vector):
+        #     temp_value_odd = 0
+        #     temp_value_even = 0
+        #     for k, prob__single_label in enumerate(z):
+        #         if k%2 == 0 and k != config.num_labels - 1:
+        #             temp_value_even += prob__single_label.detach().numpy()
+        #         else:
+        #             temp_value_odd += prob__single_label.detach().numpy()
+
+        #     Lyp += [(temp_value_even  - temp_value_odd)**2]
+        # Lyp = np.array(Lyp)
+        # Z = Lyp.reshape(len(Z), len(Z))
+
+
+        Z=Z.T
+        my_cmap = copy(plt.cm.YlGnBu)
+
+        vmax = 1
+
+            
+
+
+
+
+
+
+
+
+    if False:  # plot Lyaponov function
 
         prob_vector_maxK =torch.topk(prob_vector, 2)
         threshold = 0.98
@@ -455,11 +487,12 @@ def plot_classes_2D(model, config, name = ""):
 
 def plot_classes(model, config, name = ""):
     num_classes = model.output_layer[0].out_features
+    num_points = config.num_data_points
     for label in range(num_classes):
-        mesh = make_point_mesh(config.domain, 100)
-        Z = torch.zeros(100, requires_grad = False)
+        mesh = make_point_mesh(config.domain, num_points)
+        Z = torch.zeros(num_points, requires_grad = False)
 
-        for i in range(0, 100):
+        for i in range(0, num_points):
             point = torch.zeros(config.input_dimension, requires_grad = False)
             point[0] = mesh[0][i]
 

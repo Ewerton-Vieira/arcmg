@@ -3,7 +3,7 @@ import torch
 
 
 """todo:
-forward function should be the output of the netword
+forward function should be the output of the network
 
 """
 class PhaseSpaceClassifier(nn.Module):
@@ -89,4 +89,13 @@ class PhaseSpaceClassifier(nn.Module):
         for module in self.modules():
             if isinstance(module, nn.Dropout):
                 module = nn.Dropout(0)
+
+    def diff_prob_odd_even(self, x):
+        """Given a point return the squared difference between 
+        the sum of probability of even labels versus the sum of probability of odd labels"""
+        vector = self.vector_of_probabilities(x)[:,0:-1]  # remove the probability of separatrix 
+        b = vector[:,0::2]
+        a = (torch.sum(vector[:,0::2],dim=1,keepdim=True) - torch.sum(vector[:,1::2],dim=1,keepdim=True))**2
+        return a
+
 

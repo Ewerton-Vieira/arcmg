@@ -28,7 +28,7 @@ def main(args, yaml_file):
     dataset = Dataset(config)
 
     # dataset = TrajectoryDataset(config)
-    loader = DataLoader(dataset, batch_size=1, shuffle=False)
+    # loader = DataLoader(dataset, batch_size=500, shuffle=False)
 
     assert len(dataset) >= args.num_trajs, "Not enough trajectories in dataset"
     idxes = np.random.choice(len(dataset), args.num_trajs, replace=False)
@@ -45,17 +45,27 @@ def main(args, yaml_file):
     for idx in tqdm(idxes):
         traj = dataset[idx]
         z = np.array([traj[0].detach().numpy(),traj[1].detach().numpy()])
+
+        for k, point in enumerate(z):
+            if k == len(z)-1:
+                break
+            if np.linalg.norm(point - z[k+1,:]) < 0.5:
+                ax.plot(z[k:k+2,0], z[k:k+2,1],color='black')
+
         
-        ax.plot(z[:,0], z[:,1],color='black')
+        # if np.linalg.norm(z[:,0] - z[:,1]) < 0.05:
+        #     ax.plot(z[:,0], z[:,1],color='black')
+        
         ax.scatter(z[0][0], z[0][1], color='r', marker='.')
-        ax.scatter(z[-1][0], z[-1][1], color='g', marker='x')
+        ax.scatter(z[-1][0], z[-1][1], color='b', marker='x')
 
         
         
+    
+
+    plt.savefig(os.path.join(config.output_dir, "trajectories.png"))
     plt.show()
-
-    # plt.savefig(os.path.join(config.output_dir, "trajectories.png"))
-    # plt.close()
+    plt.close()
 
         
 if __name__ == "__main__":
@@ -79,7 +89,7 @@ if __name__ == "__main__":
     yaml_file = "config.yaml"
     # save_dir = "/data/ramp"
     save_dir = "/output/ramp_rot"
-    num_traj = 1
+    num_traj = 500
 
     parser = argparse.ArgumentParser()
     #  parser.add_argument('--job_index',help='Job index',type=int,default=0)

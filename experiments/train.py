@@ -126,28 +126,27 @@ def main(args, yaml_file):
 
             else:
                 trainer.train()
+
+                if config.dropout != 0:  # after training with dropout, set it to zero and train more
+                    name_before_dropout_zero = "_dropout_not_0"
+                    plot_classes(trainer.classifier, config, name_before_dropout_zero)
+
+                    for _, module_in_hidden_out in trainer.classifier.named_children():
+                        for name, module in module_in_hidden_out.named_children():
+                            if isinstance(module,torch.nn.Dropout):
+                                setattr(module_in_hidden_out, name, nn.Dropout(0))
+        
+                    print(trainer.classifier)
+                    trainer.train()
+
             trainer.save_model('classifier') 
-
-        # if config.dropout != 0:  # after training with dropout, set it to zero and train more
-        #     name_before_dropout_zero = "_dropout_not_0"
-        #     plot_classes(trainer.classifier, config, name_before_dropout_zero)
-
-        #     for _, module_in_hidden_out in trainer.classifier.named_children():
-        #         for name, module in module_in_hidden_out.named_children():
-        #             if isinstance(module,torch.nn.Dropout):
-        #                 setattr(module_in_hidden_out, name, nn.Dropout(0))
- 
-        #     print(trainer.classifier)
-        #     trainer.train()
-
-
 
         
 
         trainer.load_model('classifier')
 
-        plot_classes(trainer.classifier, config)  
-        plot_classes_2D(trainer.classifier, config)
+        # plot_classes(trainer.classifier, config)  
+        # plot_classes_2D(trainer.classifier, config)
         heatmap(trainer.classifier, config)          
 
         train_losses = trainer.train_losses['loss_total']
@@ -176,6 +175,7 @@ if __name__ == "__main__":
 
 # 
     yaml_file_path = os.getcwd() + "/output/pendulum"
+    yaml_file_path = os.getcwd() + "/output/ramp_rot"
 
     only_plot = True
 
