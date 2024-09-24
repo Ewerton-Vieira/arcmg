@@ -50,16 +50,13 @@ def main(args, kwargs):
     X, Y = np.meshgrid(x, y)
     
 
-    
+    # system.attrac
     attractors = system.attractors()
     # plot circles
     for i in attractors:
         circle = plt.Circle((i[0], i[1]), radius, color='r', fill=False)
         plt.gca().add_artist(circle)
     dataset = []
-
-    # base data corresponds to a one time dataset processing for cleaning up the trajectories
-    # save this once by assigning save_base_data=True and then use it to create any level-based dataset by assigning save_base_data=False 
     if save_base_data:
         # counting-based # 
         for f in tqdm(os.listdir(args.data_dir)):
@@ -86,7 +83,6 @@ def main(args, kwargs):
         dataset = np.loadtxt(os.path.join(save_dir, f"dataset_{dataset_size}.csv"), delimiter=',')
         print("Done", dataset.shape)
 
-    
     # data normalization
     dataset[:, 3] = dataset[:, 2] // level_interval # divide by level_interval
     max_levels = np.max(dataset[:, 3]) # get the maximum level
@@ -97,7 +93,6 @@ def main(args, kwargs):
     mul[dataset[:, 5] > 0] = -1
     dataset[:, 4] = dataset[:, 4] * mul # multiply by -1 if the attractor is not 0
 
-    # final_data corresponds to the final dataset processing for the level-based dataset
     if save_final_data:
         print("Writing dataset...")
         np.savetxt(os.path.join(save_dir, f"dataset_{dataset_size}_{level_interval}.csv"), dataset, delimiter=',')
