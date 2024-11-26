@@ -2,20 +2,27 @@ import numpy as np
 from arcmg.system import BaseSystem
 from scipy.integrate import solve_ivp
 
+def ode(t, z):
+    x, y = z
+    dxdt = -(-y - (x**4 / 4 - x**2 / 2 + y**2 / 2) * (x**3 - x))
+    dydt = -(x**3 - x - (x**4 / 4 - x**2 / 2 + y**2 / 2) * y)
+    return [dxdt, dydt]
+
 class Homoclinic(BaseSystem):
-    def __init__(self, t_span=1, integration_steps=10, **kwargs):
+    def __init__(self, t_span=0.1, integration_steps=10, **kwargs):
         super().__init__(**kwargs)
         self.name = "homoclinic"
         self.state_bounds = np.array([[-1, 1]]*2)
-        self.t_span = t_span
+        self.t_span = (0,t_span)
         self.integration_steps = integration_steps
+        self.t_eval = np.linspace(0, t_span, self.integration_steps)
 
     # Define the system of differential equations
-    def system(t, z):
-        x, y = z
-        dxdt = -(-y - (x**4 / 4 - x**2 / 2 + y**2 / 2) * (x**3 - x))
-        dydt = -(x**3 - x - (x**4 / 4 - x**2 / 2 + y**2 / 2) * y)
-        return [dxdt, dydt]
+    # def ode(self, t, z):
+    #     x, y = z
+    #     dxdt = -(-y - (x**4 / 4 - x**2 / 2 + y**2 / 2) * (x**3 - x))
+    #     dydt = -(x**3 - x - (x**4 / 4 - x**2 / 2 + y**2 / 2) * y)
+    #     return [dxdt, dydt]
     # Latex form
     """
     \[
@@ -26,11 +33,10 @@ class Homoclinic(BaseSystem):
     \]
     """
 
-    def f(self,s):
-        # s=s.tolist()[0]
-        self.t_span
-        t_eval = np.linspace(0, self.t_span, self.integration_steps)
-        return solve_ivp(self.system, self.t_span, s, t_eval=t_eval)
+    def f(self,point):
+        # s=s.tolist()
+        sol = solve_ivp(ode, self.t_span, point, t_eval=self.t_eval)
+        return np.array([sol.y[0,-1], sol.y[1,-1]])
 
     # def get_true_bounds(self):
     #     return NotImplementedError

@@ -26,10 +26,13 @@ def main(args):
 
     if config.name == "rampfn":
         current_system = Ramp(slope, config.input_dimension)
+        region=current_system.get_bounds()
     elif config.name == "ramp_rot":
         current_system = Ramp_rot(slope)
+        region=current_system.get_bounds()
     elif config.name == "homoclinic":
-        current_system = Ramp_rot(slope)
+        current_system = Homoclinic()
+        region = np.array([[-1, 1], [-0.25, 0.25]])
     else:
         NotImplemented
 
@@ -48,7 +51,7 @@ def main(args):
     counter = 0
     for i in range(args.num_traj):
         # traj = current_system.label_trajectory(length=length, region=np.array([[-1, 1]]+[[-1, 1]]*(config.input_dimension-1)))
-        traj = current_system.label_trajectory(length=length, region=current_system.get_bounds())
+        traj = current_system.label_trajectory(length=length, region=region)
         traj = np.array(traj)
         np.savetxt(f"{save_dir}/{counter}.txt",traj,delimiter=",")
         counter += 1
@@ -62,8 +65,8 @@ if __name__ == "__main__":
     # save_dir = "/data/ramp"
     save_dir = "/data/ramp_rot"
     save_dir = "/data/homoclinic"
-    num_traj = 1000
-    length = 4
+    num_traj = 5000
+    length = 200
 
     parser = argparse.ArgumentParser()
     #  parser.add_argument('--job_index',help='Job index',type=int,default=0)
